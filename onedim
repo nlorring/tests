@@ -1,0 +1,253 @@
+namespace ConsoleApp5
+{
+    internal class OneDimArray<T> : ArrayBase, IArrayOne, IPrinter
+        where T : IConvertible, IParsable<T>, IComparable<T>
+    {
+        T[] array;
+        int capacity;
+        int size;
+
+
+
+        public OneDimArray(int n = 0, Func<T>? valueprovider = null) : base(n)
+        {
+            if (valueprovider == null && size > 0)
+            {
+                throw new ArgumentNullException(nameof(valueprovider));
+            }
+
+            capacity = 7;
+            size = n;
+            while (capacity < size)
+            {
+                capacity = capacity * 2 + 1;
+            }
+
+            array = new T[capacity];
+
+            for (int i = 0; i < size; i++)
+            {
+                array[i] = valueprovider();
+            }
+
+        }
+
+        public void Add(T value)
+        {
+            if (capacity <= size)
+            {
+                capacity = capacity * 2 + 1;
+                T[] newArray = new T[capacity];
+                array.CopyTo(newArray, 0);
+                array = newArray;
+            }
+            array[size] = value;
+            size++;
+        }
+
+        public void Pop()
+        {
+            size--;
+            if (capacity > size * 2 + 1)
+            {
+                capacity = (capacity - 1) / 2;
+                Array.Resize(ref array, capacity);
+            }
+        }
+        public void Sort()
+        {
+            Array.Sort(array, 0, size);
+        }
+        public int Length
+        { get { return size; } }
+
+        public int NormCount(Func<T, bool> condition)
+        {
+            int count = 0;
+            for (int i = 0; i < size; ++i)
+            {
+                if (condition(array[i]))
+                {
+                    count++;
+                }
+            }
+            return count;
+        }
+        public bool OneCount(Func<T, bool> condition)
+        {
+            for (int i = 0; i < size; ++i)
+            {
+                if (condition(array[i]))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        public bool AllCount(Func<T, bool> condition)
+        {
+            for (int i = 0; i < size; ++i)
+            {
+                if (!condition(array[i]))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        public bool Inside(T elem)
+        {
+            for (int i = 0; i < size; ++i)
+            {
+                if (elem.Equals(array[i]))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public bool IsInside(T elem)
+        {
+            for (int i = 0; i < size; ++i)
+            {
+                if (elem.Equals(array[i]))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public void SuitableValue(Func<T, bool> condition)
+        {
+            for(int i = 0; i < size; ++i)
+            {
+                if (condition(array[i]))
+                {
+                    Console.WriteLine(array[i]);
+                    return;
+                }
+            }
+            Console.WriteLine("Нет ни одного подходящего значения");
+            return;
+        }
+
+        public void DoSmth(Action<T> smth)
+        {
+            for(int i = 0; i < size; i++)
+            {
+                smth(array[i]);
+            }
+        }
+
+        public T[] AllSuitableValues(Func<T, bool> condition)
+        {
+            int new_size = 0;
+            for(int i = 0; i < size; ++i)
+            {
+                if (condition(array[i]))
+                {
+                    new_size++;
+                }
+            }
+            T[] newArray = new T[new_size];
+            int s = 0;
+            for (int i = 0; i < size; ++i)
+            {
+                if (condition(array[i]))
+                {
+                    s++;
+                    newArray[s] = array[i];
+                }
+            }
+            return newArray;
+        }
+
+        public T[] BackFlip() 
+        {
+            T[] newArr = new T[size];
+            int s = 0;
+            for(int i = size - 1; i >= 0; --i)
+            {
+                newArr[s] = array[i];
+                s++;
+            }
+            return newArr;
+        }
+
+        public void MaxMin()
+
+        public void DeleteAbs()
+        {
+            /*int n = array.Length;
+            int[] d = new int[n];
+            for (int i = 0; i < n; i++)
+            {
+                if (Math.Abs(array[i]) <= 100)
+                {
+                    d.SetValue(array[i], i);
+
+                }
+            }
+
+            array = d;*/
+        }
+
+        public void DeleteSame()
+        {
+            int n = array.Length;
+            T[] res = new T[n];
+            int k = 0;
+            bool f;
+
+            foreach (T i in array)
+            {
+                f = true;
+                for (int j = 0; j < k; j++)
+                {
+                    if (i.Equals(res[j]))
+                    {
+                        f = false;
+                    }
+                }
+                if (f)
+                {
+                    res[k] = i;
+                    k += 1;
+                }
+            }
+            array = res;
+        }
+        public override decimal Average()
+        {
+            /*int[] l = array;
+            decimal summ = 0;
+            decimal sred = 0;
+            for (int i = 0; i < l.Length; i++)
+            {
+                summ += array[i];
+                int len = l.Length;
+                sred = summ / len;
+            }
+
+            return Math.Round(sred, 2);*/
+            return 0;
+        }
+
+        public override void Print()
+        {
+            Console.WriteLine("Одномерный массив: ");
+            for (int i = 0; i < array.Length; i++)
+            {
+                Console.Write($"{array[i]} ");
+            }
+            Console.WriteLine();
+        }
+        public override void Change()
+        {
+            DeleteSame();
+            DeleteAbs();
+        }
+    }
+}
